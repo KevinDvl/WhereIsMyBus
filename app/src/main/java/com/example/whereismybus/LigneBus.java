@@ -16,7 +16,7 @@ public class LigneBus implements Parcelable {
     private String nom;
     private String depart;
     private String arrivee;
-    private ArrayList<String> arretsDesservis = new ArrayList<String>();
+    private String arretChoisi;
     private String destinationChoisie;
 
     //constructeur, une ligne de bus est initialisée avec son nom
@@ -28,7 +28,8 @@ public class LigneBus implements Parcelable {
         nom = source.readString();
         depart = source.readString();
         arrivee = source.readString();
-        source.readStringList(arretsDesservis);
+        arretChoisi = source.readString();
+        destinationChoisie = source.readString();
     }
 
     public static final Creator<LigneBus> CREATOR = new Creator<LigneBus>() {
@@ -79,14 +80,6 @@ public class LigneBus implements Parcelable {
         return this.arrivee;
     }
 
-    /**
-     * ajoute un arrêt à la liste des arrêts de la ligne
-     * @param arret : nom de l'arrêt à ajouter
-     */
-    public void ajouterArret(String arret) {
-        arretsDesservis.add(arret);
-    }
-
     public void setDestinationChoisie(String dest) {
         destinationChoisie = dest;
     }
@@ -95,12 +88,12 @@ public class LigneBus implements Parcelable {
         return this.destinationChoisie;
     }
 
-    /**
-     * renvoie la liste des arrêts desservis par la ligne
-     * @return : liste des noms des arrêts desservis par la ligne
-     */
-    public ArrayList<String> getArretsDesservis() {
-        return arretsDesservis;
+    public void setArretChoisi(String arret) {
+        arretChoisi = arret;
+    }
+
+    public String getArretChoisi() {
+        return this.arretChoisi;
     }
 
     @Override
@@ -113,7 +106,7 @@ public class LigneBus implements Parcelable {
         dest.writeString(nom);
         dest.writeString(depart);
         dest.writeString(arrivee);
-        dest.writeStringList(arretsDesservis);
-        //dest.writeList(arretsDesservis);
+        dest.writeString(arretChoisi);
+        dest.writeString(destinationChoisie);
     }
 }
