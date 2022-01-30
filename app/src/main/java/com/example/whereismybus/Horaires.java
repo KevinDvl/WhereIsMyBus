@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallback{
@@ -50,22 +51,23 @@ public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallba
 
     @Override
     public void displayJSON(JSONObject receivedJson) {
-        ArrayList<String> horairesPassages = recupererHoraires(receivedJson);
+        ArrayList<LocalDateTime> horairesPassages = recupererHoraires(receivedJson);
 
-        for(String horaire : horairesPassages) {
-            affichageHoraires.append(horaire+"\n");
+        for(LocalDateTime horaire : horairesPassages) {
+            affichageHoraires.append(horaire.getHour()+":"+horaire.getMinute()+"\n");
         }
     }
 
-    private ArrayList<String> recupererHoraires(JSONObject jsonHoraires) {
-        ArrayList<String> horairesPassages = new ArrayList<String>();
+    private ArrayList<LocalDateTime> recupererHoraires(JSONObject jsonHoraires) {
+        ArrayList<LocalDateTime> horairesPassages = new ArrayList<LocalDateTime>();
 
         try {
             JSONArray jsonArray = jsonHoraires.getJSONArray("records");
             for(int i = 0; i < jsonArray.length(); i++) { //parcours du json pour obtenir les infos qui nous intéressent
                 JSONObject arretBus = jsonArray.getJSONObject(i);
                 JSONObject fields = arretBus.getJSONObject("fields");
-                String horaire = fields.getString("arriveetheorique");
+                String horaireString = fields.getString("arriveetheorique");
+                LocalDateTime horaire = LocalDateTime.parse(horaireString.substring(0, horaireString.length() - 6));
                 horairesPassages.add(horaire);
             }
         } catch (JSONException e) {
