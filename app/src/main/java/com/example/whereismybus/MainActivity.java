@@ -8,41 +8,37 @@ package com.example.whereismybus;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.TextView;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity implements StarAPI.StarApiCallback{
 
-    private TextView affichageResultat;
-    private Button sendButton;
+    //static final Logger log = Logger.getLogger();
+
+    private Button nextButton;
     private AutoCompleteTextView actvLigneBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        affichageResultat = findViewById(R.id.affichageResultat);
-        sendButton = findViewById(R.id.sendButton);
+        nextButton = findViewById(R.id.nextButton);
         actvLigneBus = findViewById(R.id.lignesBusTextView);
+
         actvLigneBus.setVisibility(View.INVISIBLE);
+        nextButton.setEnabled(false);
 
         String url = "https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-bus-topologie-lignes-td&q=&rows=200&sort=id";
 
@@ -74,18 +70,79 @@ public class MainActivity extends AppCompatActivity implements StarAPI.StarApiCa
         return lignesBus;
     }
 
+    private String[] recupererDestinations(JSONObject jsonLignesBus, String nomLigne) {
+        String destinations[] = new String[2];
+        try {
+            JSONArray jsonArray = jsonLignesBus.getJSONArray("records");
+            for(int i = 0; i < jsonArray.length(); i++) { //parcours du json pour obtenir les infos qui nous intéressent
+                JSONObject ligneBus = jsonArray.getJSONObject(i);
+                JSONObject fields = ligneBus.getJSONObject("fields");
+
+                if(fields.getString("nomcourt").equals(nomLigne)) {
+                    String chaineDestination = fields.getString("nomlong");
+                    //System.out.println(chaineDestination);
+                    destinations = decouperSelonCaractere(chaineDestination);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return destinations;
+    }
+
+    private String[] decouperSelonCaractere(String s) {
+        final String SEPARATEUR1 = "\\(";
+        final String SEPARATEUR2 = "\\)";
+        String destinations[] = new String[2];
+
+        String separation1[] = s.split(SEPARATEUR1);
+
+        for(int i = 1; i < separation1.length; i++) {
+            String separation2[] = separation1[i].split(SEPARATEUR2);
+            if(i == 1) {
+                destinations[0] = separation2[0];
+            }
+            if(i == 2) {
+                destinations[1] = separation2[0];
+            }
+        }
+        return destinations;
+    }
+
     /**
      * méthode de rappel permettant de récupérer le json au moment de la requête
      * @param receivedJson : le json obtenu après la requête
      */
     @Override
     public void displayJSON(JSONObject receivedJson) {
-        System.out.println("Here we are in the MainActivity");
+        //System.out.println("Here we are in the MainActivity");
         ArrayList<String> lignesBus = recupererLignesBus(receivedJson);
         System.out.println(lignesBus.toString());
         actvLigneBus.setVisibility(View.VISIBLE);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, lignesBus);
         actvLigneBus.setAdapter(adapter);
+        nextButton.setEnabled(true);
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Dans le champ : "+actvLigneBus.getText().toString());
+                if(lignesBus.contains(actvLigneBus.getText().toString())) {
+                    LigneBus ligneSelectionnee = new LigneBus(actvLigneBus.getText().toString());
+                    String[] destinations = recupererDestinations(receivedJson, ligneSelectionnee.getName());
+                    ligneSelectionnee.setDepart(destinations[0]);
+                    ligneSelectionnee.setArrivee(destinations[1]);
+
+                    Intent intentDestination = new Intent(getApplicationContext(), Direction.class);
+                    intentDestination.putExtra("ligneBus", ligneSelectionnee);
+                    startActivity(intentDestination);
+                }
+                else {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Le champ ne correspond à aucune ligne de bus", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
     }
 }
