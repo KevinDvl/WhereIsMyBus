@@ -31,7 +31,7 @@ public class Arret extends AppCompatActivity implements StarAPI.StarApiCallback{
 
         nextButton3 = findViewById(R.id.nextButton3);
         actvArret = findViewById(R.id.actvArret);
-        actvArret.setVisibility(View.INVISIBLE);
+        //actvArret.setVisibility(View.INVISIBLE);
 
         Intent intent = getIntent();
         ligneBus = intent.getParcelableExtra("ligneBus");
@@ -49,7 +49,7 @@ public class Arret extends AppCompatActivity implements StarAPI.StarApiCallback{
         ArrayList<String> arretsDesservisDoublons = recupererArretsDesservis(receivedJson);
         ArrayList<String> arretsDesservis = supprimerDoublons(arretsDesservisDoublons);
 
-        actvArret.setVisibility(View.VISIBLE);
+        //actvArret.setVisibility(View.VISIBLE);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, arretsDesservis);
         actvArret.setAdapter(adapter);
