@@ -21,7 +21,7 @@ public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallba
 
     private TextView infosUserHoraires;
     private final String DEBUTURL = "https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-bus-circulation-passages-tr&q=nomcourtligne%3D%22";
-    private final String URL2 = "%22+AND+destination%3D%22";
+    private final String URL2 = "%22+AND+sens%3D%22";
     private final String URL3 = "%22+AND+nomarret%3D%22";
     private final String FINURL = "%22&rows=50&sort=-arriveetheorique&timezone=Europe%2FBerlin";
     private ListView affichageHoraires;
@@ -39,7 +39,7 @@ public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallba
 
         infosUserHoraires.setText("Prochains passages du "+ligneBus.getName()+" à "+ligneBus.getArretChoisi());
 
-        String urlEspaces = DEBUTURL+ligneBus.getName()+URL2+ligneBus.getDestinationChoisie()+URL3+ligneBus.getArretChoisi()+FINURL;
+        String urlEspaces = DEBUTURL+ligneBus.getName()+URL2+ligneBus.getSens()+URL3+ligneBus.getArretChoisi()+FINURL;
         String url = retirerEspaces(urlEspaces);
         System.out.println(url);
 
@@ -61,10 +61,6 @@ public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallba
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 R.layout.custom_listview, horairesFormatees);
         affichageHoraires.setAdapter(adapter);
-
-        /*for(LocalDateTime horaire : horairesPassages) {
-            horaire.
-        }*/
     }
 
     private ArrayList<String> formaterHoraires(ArrayList<LocalDateTime> horairesPassages) {

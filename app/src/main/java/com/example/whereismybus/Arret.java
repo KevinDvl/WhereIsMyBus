@@ -58,7 +58,6 @@ public class Arret extends AppCompatActivity implements StarAPI.StarApiCallback{
         nextButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Dans le champ : "+actvArret.getText().toString());
                 ligneBus.setArretChoisi(actvArret.getText().toString());
 
                 Intent intentHoraires = new Intent(getApplicationContext(), Horaires.class);

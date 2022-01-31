@@ -18,6 +18,7 @@ public class LigneBus implements Parcelable {
     private String arrivee;
     private String arretChoisi;
     private String destinationChoisie;
+    private String sens;
 
     //constructeur, une ligne de bus est initialisée avec son nom
     public LigneBus(String nom) {
@@ -30,6 +31,7 @@ public class LigneBus implements Parcelable {
         arrivee = source.readString();
         arretChoisi = source.readString();
         destinationChoisie = source.readString();
+        sens = source.readString();
     }
 
     public static final Creator<LigneBus> CREATOR = new Creator<LigneBus>() {
@@ -82,6 +84,16 @@ public class LigneBus implements Parcelable {
 
     public void setDestinationChoisie(String dest) {
         destinationChoisie = dest;
+        if(destinationChoisie.equals(this.getDepart())) {
+            sens = "1";
+        }
+        else {
+            sens = "0";
+        }
+    }
+
+    public String getSens() {
+        return this.sens;
     }
 
     public String getDestinationChoisie() {
@@ -108,5 +120,6 @@ public class LigneBus implements Parcelable {
         dest.writeString(arrivee);
         dest.writeString(arretChoisi);
         dest.writeString(destinationChoisie);
+        dest.writeString(sens);
     }
 }
