@@ -1,13 +1,20 @@
 package com.example.whereismybus;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.AlarmClock;
+import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,6 +68,34 @@ public class Horaires extends AppCompatActivity implements StarAPI.StarApiCallba
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 R.layout.custom_listview, horairesFormatees);
         affichageHoraires.setAdapter(adapter);
+
+        affichageHoraires.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object objSelectionne = affichageHoraires.getItemAtPosition(position);
+                String horaireSelectionne = objSelectionne.toString();
+                System.out.println(horaireSelectionne);
+                showAlertDialog(horaireSelectionne);
+            }
+        });
+    }
+
+    private void showAlertDialog(String horaireSelectionne) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Alarme");
+        dialog.setMessage("Définir une alarme pour le bus de "+horaireSelectionne+"?");
+        dialog.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String[] horaire = horaireSelectionne.split(":");
+                Intent alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
+                alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, Integer.parseInt(horaire[0]));
+                alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.parseInt(horaire[1]));
+                startActivity(alarmIntent);
+            }
+        });
+        dialog.setNegativeButton("Annuler", null);
+        dialog.create().show();
     }
 
     private ArrayList<String> formaterHoraires(ArrayList<LocalDateTime> horairesPassages) {

@@ -3,6 +3,7 @@
     package="com.example.whereismybus">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -13,7 +14,7 @@
         android:theme="@style/Theme.WhereIsMyBus">
         <activity
             android:name=".Horaires"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".Arret"
             android:exported="false" />

@@ -9,6 +9,7 @@ package com.example.whereismybus;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -46,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements StarAPI.StarApiCa
         requete.execute(url);
         requete.setApiCallback(this);
 
-
+        String[] permissions = {"android.permission.SET_ALARM", "android.permission.INTERNET"};
+        this.requestAllPermissions(permissions);
     }
 
     /**
@@ -144,5 +146,12 @@ public class MainActivity extends AppCompatActivity implements StarAPI.StarApiCa
                 }
             }
         });
+    }
+
+    public void requestAllPermissions(String[] permissions)
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, 80);
+        }
     }
 }
